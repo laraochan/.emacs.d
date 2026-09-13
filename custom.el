@@ -9,8 +9,11 @@
      default))
  '(package-selected-packages
    '(agent-shell cape consult corfu diff-hl doom-themes eat embark
-                 embark-consult haskell-mode magit marginalia
-                 markdown-mode orderless projectile vertico vterm)))
+                 embark-consult flymake-eslint flymake-oxlint
+                 haskell-mode magit marginalia markdown-mode orderless
+                 projectile vertico vterm))
+ '(package-vc-selected-packages
+   '((flymake-oxlint :url "https://github.com/laraochan/flymake-oxlint"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

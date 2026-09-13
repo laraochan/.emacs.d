@@ -304,13 +304,13 @@
         ("C-c l f" . eglot-format-buffer)))
 
 (use-package flymake-eslint
-  :vc (:url "https://github.com/laraochan/flymake-eslint")
+  :vc (:url "https://github.com/laraochan/flymake-eslint" :rev :newest)
   :hook
   (((js-mode js-ts-mode typescript-mode typescript-ts-mode tsx-ts-mode)
     . flymake-eslint-enable)))
 
 (use-package flymake-oxlint
-  :vc (:url "https://github.com/laraochan/flymake-oxlint")
+  :vc (:url "https://github.com/laraochan/flymake-oxlint" :rev :newest)
   :hook
   (((js-mode js-ts-mode typescript-mode typescript-ts-mode tsx-ts-mode)
     . flymake-oxlint-enable)))
