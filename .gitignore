@@ -1,0 +1,12 @@
+*
+
+!init.el
+!custom.el
+!README.*
+!.gitignore
+!lisp/
+!lisp/my-flymake-eslint.el
+!lisp/my-flymake-oxlint.el
+!test/
+!test/*.el
+!test/README.md

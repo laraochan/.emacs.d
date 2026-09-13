@@ -289,28 +289,6 @@
         ("M-n" . flymake-goto-next-error)
         ("M-p" . flymake-goto-prev-error)))
 
-(use-package eglot
-  :ensure nil
-  :hook
-  ((typescript-ts-mode . eglot-ensure)
-   (tsx-ts-mode . eglot-ensure)
-   (js-ts-mode . eglot-ensure)
-   (rust-ts-mode . eglot-ensure)
-   (haskell-mode . eglot-ensure))
-  :bind
-  (:map eglot-mode-map
-        ("C-c l r" . eglot-rename)
-        ("C-c l a" . eglot-code-actions)
-        ("C-c l f" . eglot-format-buffer)))
-
-(use-package my-flymake-eslint
-  :ensure nil
-  :commands my-flymake-eslint-backend)
-
-(use-package my-flymake-oxlint
-  :ensure nil
-  :commands my-flymake-oxlint-backend)
-
 (defun my/javascript-flymake-setup ()
   "Enable local linters alongside any language server diagnostics."
   (when (derived-mode-p 'js-mode 'js-ts-mode 'typescript-mode
@@ -319,13 +297,31 @@
     (add-hook 'flymake-diagnostic-functions #'my-flymake-oxlint-backend nil t)
     (flymake-mode 1)))
 
-(dolist (hook '(js-mode-hook js-ts-mode-hook typescript-mode-hook
-                typescript-ts-mode-hook tsx-ts-mode-hook))
-  (add-hook hook #'my/javascript-flymake-setup))
+(use-package eglot
+  :ensure nil
+  :hook
+  ((typescript-ts-mode . eglot-ensure)
+   (tsx-ts-mode . eglot-ensure)
+   (js-ts-mode . eglot-ensure)
+   (rust-ts-mode . eglot-ensure)
+   (haskell-mode . eglot-ensure)
+   (eglot-managed-mode . my/javascript-flymake-setup))
+  :bind
+  (:map eglot-mode-map
+        ("C-c l r" . eglot-rename)
+        ("C-c l a" . eglot-code-actions)
+        ("C-c l f" . eglot-format-buffer)))
 
-;; Eglot replaces the backend list when it begins managing a buffer.
-(with-eval-after-load 'eglot
-  (add-hook 'eglot-managed-mode-hook #'my/javascript-flymake-setup))
+(use-package my-flymake-eslint
+  :ensure nil
+  :commands my-flymake-eslint-backend
+  :hook
+  (((js-mode js-ts-mode typescript-mode typescript-ts-mode tsx-ts-mode)
+    . my/javascript-flymake-setup)))
+
+(use-package my-flymake-oxlint
+  :ensure nil
+  :commands my-flymake-oxlint-backend)
 
 (use-package magit
   :ensure t)
