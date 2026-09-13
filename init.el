@@ -289,18 +289,6 @@
         ("M-n" . flymake-goto-next-error)
         ("M-p" . flymake-goto-prev-error)))
 
-(defun my/javascript-flymake-add-backends ()
-  "Add JavaScript linters to the current buffer."
-  (add-hook 'flymake-diagnostic-functions #'my-flymake-eslint-backend nil t)
-  (add-hook 'flymake-diagnostic-functions #'my-flymake-oxlint-backend nil t))
-
-(defun my/javascript-flymake-setup ()
-  "Enable local linters and preserve them when Eglot starts."
-  (my/javascript-flymake-add-backends)
-  (add-hook 'eglot-managed-mode-hook
-            #'my/javascript-flymake-add-backends nil t)
-  (flymake-mode 1))
-
 (use-package eglot
   :ensure nil
   :hook
@@ -315,16 +303,17 @@
         ("C-c l a" . eglot-code-actions)
         ("C-c l f" . eglot-format-buffer)))
 
-(use-package my-flymake-eslint
-  :ensure nil
-  :commands my-flymake-eslint-backend
+(use-package flymake-eslint
+  :vc (:url "https://github.com/laraochan/flymake-eslint")
   :hook
   (((js-mode js-ts-mode typescript-mode typescript-ts-mode tsx-ts-mode)
-    . my/javascript-flymake-setup)))
+    . flymake-eslint-enable)))
 
-(use-package my-flymake-oxlint
-  :ensure nil
-  :commands my-flymake-oxlint-backend)
+(use-package flymake-oxlint
+  :vc (:url "https://github.com/laraochan/flymake-oxlint")
+  :hook
+  (((js-mode js-ts-mode typescript-mode typescript-ts-mode tsx-ts-mode)
+    . flymake-oxlint-enable)))
 
 (use-package magit
   :ensure t)
