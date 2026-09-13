@@ -8,6 +8,8 @@
 
 (require 'use-package)
 
+(add-to-list 'load-path (locate-user-emacs-file "lisp"))
+
 (use-package emacs
   :ensure nil
   :custom
@@ -245,7 +247,8 @@
 (use-package js
   :ensure nil
   :mode
-  ("\\.js\\'" . js-ts-mode))
+  (("\\.js\\'" . js-ts-mode)
+   ("\\.jsx\\'" . js-ts-mode)))
 
 (use-package typescript-ts-mode
   :ensure nil
@@ -299,6 +302,30 @@
         ("C-c l r" . eglot-rename)
         ("C-c l a" . eglot-code-actions)
         ("C-c l f" . eglot-format-buffer)))
+
+(use-package my-flymake-eslint
+  :ensure nil
+  :commands my-flymake-eslint-backend)
+
+(use-package my-flymake-oxlint
+  :ensure nil
+  :commands my-flymake-oxlint-backend)
+
+(defun my/javascript-flymake-setup ()
+  "Enable local linters alongside any language server diagnostics."
+  (when (derived-mode-p 'js-mode 'js-ts-mode 'typescript-mode
+                        'typescript-ts-mode 'tsx-ts-mode)
+    (add-hook 'flymake-diagnostic-functions #'my-flymake-eslint-backend nil t)
+    (add-hook 'flymake-diagnostic-functions #'my-flymake-oxlint-backend nil t)
+    (flymake-mode 1)))
+
+(dolist (hook '(js-mode-hook js-ts-mode-hook typescript-mode-hook
+                typescript-ts-mode-hook tsx-ts-mode-hook))
+  (add-hook hook #'my/javascript-flymake-setup))
+
+;; Eglot replaces the backend list when it begins managing a buffer.
+(with-eval-after-load 'eglot
+  (add-hook 'eglot-managed-mode-hook #'my/javascript-flymake-setup))
 
 (use-package magit
   :ensure t)
