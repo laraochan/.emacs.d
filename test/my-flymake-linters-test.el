@@ -242,12 +242,15 @@
                                    '(eglot my-flymake-eslint
                                            my-flymake-oxlint)))
                         (and (eq (car-safe form) 'defun)
-                             (eq (cadr form) 'my/javascript-flymake-setup)))
+                             (memq (cadr form)
+                                   '(my/javascript-flymake-add-backends
+                                     my/javascript-flymake-setup))))
                 (eval form t))))
         (end-of-file nil)))
     (with-temp-buffer
       (js-mode)
       (should flymake-mode)
+      (should (local-variable-p 'eglot-managed-mode-hook))
       (should (memq 'my-flymake-eslint-backend flymake-diagnostic-functions))
       (should (memq 'my-flymake-oxlint-backend flymake-diagnostic-functions))
       ;; Reproduce Eglot's documented replacement then run its actual hook.

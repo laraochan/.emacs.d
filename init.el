@@ -289,13 +289,17 @@
         ("M-n" . flymake-goto-next-error)
         ("M-p" . flymake-goto-prev-error)))
 
+(defun my/javascript-flymake-add-backends ()
+  "Add JavaScript linters to the current buffer."
+  (add-hook 'flymake-diagnostic-functions #'my-flymake-eslint-backend nil t)
+  (add-hook 'flymake-diagnostic-functions #'my-flymake-oxlint-backend nil t))
+
 (defun my/javascript-flymake-setup ()
-  "Enable local linters alongside any language server diagnostics."
-  (when (derived-mode-p 'js-mode 'js-ts-mode 'typescript-mode
-                        'typescript-ts-mode 'tsx-ts-mode)
-    (add-hook 'flymake-diagnostic-functions #'my-flymake-eslint-backend nil t)
-    (add-hook 'flymake-diagnostic-functions #'my-flymake-oxlint-backend nil t)
-    (flymake-mode 1)))
+  "Enable local linters and preserve them when Eglot starts."
+  (my/javascript-flymake-add-backends)
+  (add-hook 'eglot-managed-mode-hook
+            #'my/javascript-flymake-add-backends nil t)
+  (flymake-mode 1))
 
 (use-package eglot
   :ensure nil
@@ -304,8 +308,7 @@
    (tsx-ts-mode . eglot-ensure)
    (js-ts-mode . eglot-ensure)
    (rust-ts-mode . eglot-ensure)
-   (haskell-mode . eglot-ensure)
-   (eglot-managed-mode . my/javascript-flymake-setup))
+   (haskell-mode . eglot-ensure))
   :bind
   (:map eglot-mode-map
         ("C-c l r" . eglot-rename)
