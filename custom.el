@@ -10,7 +10,7 @@
  '(package-selected-packages
    '(agent-shell cape consult corfu diff-hl doom-themes eat embark
                  embark-consult haskell-mode magit marginalia
-                 orderless projectile vertico vterm)))
+                 markdown-mode orderless projectile vertico vterm)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

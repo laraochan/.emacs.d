@@ -106,9 +106,6 @@
 
 (use-package projectile
   :ensure t
-  :custom
-  (projectile-buffers-filter-function
-   #'projectile-buffers-with-file)
   :preface
   (defun my/projectile-vterm (&optional number)
     "Open numbered vterm for a Projectile project."
@@ -150,8 +147,18 @@
   (corfu-auto-prefix 2)
   (corfu-cycle t)
   :init
-  (global-corfu-mode 1)
-  :config
+  (global-corfu-mode 1))
+
+(use-package corfu-popupinfo
+  :ensure nil
+  :after corfu
+  :custom
+  (corfu-popupinfo-delay '(0.6 . 0.2))
+  (corfu-popupinfo-max-width 80)
+  (corfu-popupinfo-max-height 20)
+  (corfu-popupinfo-hide t)
+  (corfu-popupinfo-direction '(right left vertical))
+  :init
   (corfu-popupinfo-mode 1))
 
 (use-package orderless
@@ -227,28 +234,57 @@
            "master"
            "tsx/src")
           (rust
-           "https://github.com/tree-sitter/tree-sitter-rust"))))
+           "https://github.com/tree-sitter/tree-sitter-rust")))
+  
+  (dolist (entry treesit-language-source-alist)
+    (let ((language (car entry)))
+      (unless (treesit-language-available-p language)
+        (message "Installing tree-sitter grammar: %s" language)
+        (treesit-install-language-grammar language)))))
 
 (use-package js
   :ensure nil
   :mode
-  ("\.js\'" . js-ts-mode))
+  ("\\.js\\'" . js-ts-mode))
 
 (use-package typescript-ts-mode
   :ensure nil
   :mode
-  (("\.ts\'" . typescript-ts-mode)
-   ("\.tsx\'" . tsx-ts-mode)))
+  (("\\.ts\\'" . typescript-ts-mode)
+   ("\\.tsx\\'" . tsx-ts-mode)))
 
 (use-package rust-ts-mode
   :ensure nil
   :mode
-  ("\.rs\'" . rust-ts-mode))
+  ("\\.rs\\'" . rust-ts-mode))
 
 (use-package haskell-mode
   :ensure t
   :mode
-  ("\.hs\'" . haskell-mode))
+  ("\\.hs\\'" . haskell-mode))
+
+(use-package markdown-mode
+  :ensure t
+  :commands
+  (markdown-mode gfm-view-mode))
+
+(use-package eldoc
+  :ensure nil
+  :custom
+  ;; Show diagnostics, signatures and hover documentation together.
+  (eldoc-documentation-strategy #'eldoc-documentation-compose)
+  ;; Keep hover useful without letting the echo area grow too much.
+  (eldoc-echo-area-use-multiline-p 3))
+
+(use-package flymake
+  :ensure nil
+  :custom
+  ;; Show the most important diagnostic directly beside the code.
+  (flymake-show-diagnostics-at-end-of-line 'short)
+  :bind
+  (:map flymake-mode-map
+        ("M-n" . flymake-goto-next-error)
+        ("M-p" . flymake-goto-prev-error)))
 
 (use-package eglot
   :ensure nil
