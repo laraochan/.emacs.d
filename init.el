@@ -28,6 +28,14 @@
   (use-file-dialog nil)
   :config
   (setq-default indent-tabs-mode nil)
+  (let ((backup-dir (locate-user-emacs-file "backups/"))
+        (auto-save-dir (locate-user-emacs-file "auto-saves/")))
+    (make-directory backup-dir t)
+    (make-directory auto-save-dir t)
+    (setq backup-directory-alist `(("." . ,backup-dir))
+          auto-save-file-name-transforms `((".*" ,auto-save-dir t))
+          auto-save-list-file-prefix
+          (expand-file-name ".saves-" auto-save-dir)))
   (delete-selection-mode 1)
   (show-paren-mode 1))
 
