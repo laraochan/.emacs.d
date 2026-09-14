@@ -11,7 +11,7 @@
    '(agent-shell cape consult corfu diff-hl doom-themes eat embark
                  embark-consult flymake-eslint flymake-oxlint
                  haskell-mode magit marginalia markdown-mode orderless
-                 projectile vertico vterm))
+                 perspective projectile vertico vterm))
  '(package-vc-selected-packages
    '((flymake-oxlint :url "https://github.com/laraochan/flymake-oxlint"))))
 (custom-set-faces

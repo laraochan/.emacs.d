@@ -329,4 +329,14 @@
 (use-package agent-shell
   :ensure t)
 
+(use-package perspective
+  :ensure t
+  :bind
+  (("C-c w w" . persp-switch)
+   ("C-c w n" . persp-next)
+   ("C-c w p" . persp-prev)
+   ("C-c w k" . persp-kill))
+  :init
+  (persp-mode 1))
+
 ;;; init.el ends here
