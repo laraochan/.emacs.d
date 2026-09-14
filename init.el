@@ -331,6 +331,8 @@
 
 (use-package perspective
   :ensure t
+  :custom
+  (persp-mode-prefix-key (kbd "C-c w"))
   :bind
   (("C-c w w" . persp-switch)
    ("C-c w n" . persp-next)
