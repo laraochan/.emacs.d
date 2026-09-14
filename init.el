@@ -341,4 +341,9 @@
   :init
   (persp-mode 1))
 
+(use-package ddskk
+  :ensure t
+  :custom
+  (default-input-method "japanese-skk"))
+
 ;;; init.el ends here

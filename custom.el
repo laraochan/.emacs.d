@@ -5,7 +5,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(agent-shell cape consult corfu diff-hl doom-themes embark
+   '(agent-shell cape consult corfu ddskk diff-hl doom-themes embark
                  embark-consult exec-path-from-shell flymake-eslint
                  flymake-oxlint haskell-mode magit marginalia
                  markdown-mode orderless perspective projectile
