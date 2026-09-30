@@ -34,3 +34,10 @@
 (use-package vterm)
 
 (use-package magit)
+
+(use-package org
+  :straight nil
+  :custom
+  (org-directory "~/Library/Mobile Documents/com~apple~CloudDocs/org")
+  (org-agenda-files
+   (list (expand-file-name "main.org" org-directory))))
