@@ -1,6 +1,9 @@
-;;; init.el --- Emacs Configuration -*- lexical-binding: t; -*-
+;;; init.el -*- lexical-binding: t; -*-
+
+;;; straight.el
 
 (defvar bootstrap-version)
+
 (let ((bootstrap-file
        (expand-file-name
         "straight/repos/straight.el/bootstrap.el"
@@ -11,44 +14,55 @@
     (with-current-buffer
         (url-retrieve-synchronously
          "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
+         'silent
+         'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(straight-use-package 'use-package)
 
-(setq straight-use-package-by-default t)
+;;; Packages
 
-(use-package exec-path-from-shell
-  :config (when (memq window-system '(mac ns x pgtk))
-	    (exec-path-from-shell-initialize)))
+(straight-use-package 'exec-path-from-shell)
+(straight-use-package 'doom-themes)
+(straight-use-package 'vterm)
+(straight-use-package 'magit)
 
-(use-package which-key
-  :straight nil
-  :config
-  (which-key-mode))
 
-(use-package doom-themes
-  :custom
-  (doom-themes-enable-bold t)
-  (doom-themes-enable-italic t)
-  :config
-  (load-theme 'doom-one t))
+;;; Environment
 
-(use-package vterm)
+(require 'exec-path-from-shell)
 
-(use-package magit)
+(when (memq window-system '(mac ns x pgtk))
+  (exec-path-from-shell-initialize))
 
-(use-package org
-  :straight nil
-  :init
-  (setq org-directory "~/Library/Mobile Documents/com~apple~CloudDocs/org"
-        org-agenda-files
-        (list (expand-file-name "main.org" org-directory)))
-  :preface
-  (defun my/open-org-main ()
-    (interactive)
-    (find-file (expand-file-name "main.org" org-directory)))
-  :bind
-  (("C-c o" . my/open-org-main)))
+
+;;; UI
+
+(require 'which-key)
+(which-key-mode 1)
+
+(require 'doom-themes)
+
+(setq doom-themes-enable-bold t
+      doom-themes-enable-italic t)
+
+(load-theme 'doom-one t)
+
+
+;;; Org
+
+(setq org-directory
+      "~/Library/Mobile Documents/com~apple~CloudDocs/org")
+
+(setq org-agenda-files
+      (list (expand-file-name "main.org" org-directory)))
+
+(defun my/open-org-main ()
+  (interactive)
+  (find-file
+   (expand-file-name "main.org" org-directory)))
+
+(global-set-key (kbd "C-c o") #'my/open-org-main)
+
+;;; init.el ends here
