@@ -24,6 +24,11 @@
   :config (when (memq window-system '(mac ns x pgtk))
 	    (exec-path-from-shell-initialize)))
 
+(use-package which-key
+  :straight nil
+  :config
+  (which-key-mode))
+
 (use-package doom-themes
   :custom
   (doom-themes-enable-bold t)
@@ -37,7 +42,13 @@
 
 (use-package org
   :straight nil
-  :custom
-  (org-directory "~/Library/Mobile Documents/com~apple~CloudDocs/org")
-  (org-agenda-files
-   (list (expand-file-name "main.org" org-directory))))
+  :init
+  (setq org-directory "~/Library/Mobile Documents/com~apple~CloudDocs/org"
+        org-agenda-files
+        (list (expand-file-name "main.org" org-directory)))
+  :preface
+  (defun my/open-org-main ()
+    (interactive)
+    (find-file (expand-file-name "main.org" org-directory)))
+  :bind
+  (("C-c o" . my/open-org-main)))
