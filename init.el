@@ -109,16 +109,16 @@
 (setq treesit-font-lock-level 4
       treesit-language-source-alist
       '((json "https://github.com/tree-sitter/tree-sitter-json")
-	(yaml "https://github.com/ikatyang/tree-sitter-yaml")
-	(toml "https://github.com/ikatyang/tree-sitter-toml")
-	(haskell "https://github.com/tree-sitter/tree-sitter-haskell")
-	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-	(php "https://github.com/tree-sitter/tree-sitter-php" "master" "php/src")
-	(php_only "https://github.com/tree-sitter/tree-sitter-php" "master" "php_only/src")
-	(phpdoc "https://github.com/claytonrcarter/tree-sitter-phpdoc")
-    (html "https://github.com/tree-sitter/tree-sitter-html")
-    (css "https://github.com/tree-sitter/tree-sitter-css")))
+	    (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+	    (toml "https://github.com/ikatyang/tree-sitter-toml")
+	    (haskell "https://github.com/tree-sitter/tree-sitter-haskell")
+	    (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+	    (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+	    (php "https://github.com/tree-sitter/tree-sitter-php" "master" "php/src")
+	    (php_only "https://github.com/tree-sitter/tree-sitter-php" "master" "php_only/src")
+	    (phpdoc "https://github.com/claytonrcarter/tree-sitter-phpdoc")
+        (html "https://github.com/tree-sitter/tree-sitter-html")
+        (css "https://github.com/tree-sitter/tree-sitter-css")))
 (defun my/treesit-install-grammars ()
   "未導入の Tree-sitter 文法をインストールする。"
   (interactive)
@@ -138,15 +138,15 @@
 ;; 候補が選択済みなら確定、それ以外は通常の動作
 (dolist (key '("RET" "<return>"))
   (keymap-set corfu-map key
-	      '(menu-item "" nil
-			  :filter
-			  (lambda (&optional _)
-			    (when (>= corfu--index 0)
-			      #'corfu-insert)))))
+	          '(menu-item "" nil
+			              :filter
+			              (lambda (&optional _)
+			                (when (>= corfu--index 0)
+			                  #'corfu-insert)))))
 (add-hook 'prog-mode-hook
-	  (lambda ()
-	    (corfu-mode 1)
-	    (corfu-popupinfo-mode 1)))
+	      (lambda ()
+	        (corfu-mode 1)
+	        (corfu-popupinfo-mode 1)))
 (defun my/text-code-completion-setup ()
   (corfu-mode 1)
   (corfu-popupinfo-mode 1))
