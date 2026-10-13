@@ -41,6 +41,23 @@
 
 ;;; files
 (global-auto-revert-mode 1)
+;; バックアップ・自動保存の置き場所
+(let ((backup-dir (locate-user-emacs-file "backup/"))
+      (auto-save-dir (locate-user-emacs-file "backup/auto-save/")))
+  (make-directory backup-dir t)
+  (make-directory auto-save-dir t)
+  (setq backup-directory-alist
+        `(("." . ,backup-dir))
+        auto-save-file-name-transforms
+        `((".*" ,auto-save-dir t))
+        auto-save-list-file-prefix
+        (expand-file-name ".saves-" auto-save-dir)))
+;; バックアップはコピーで作成し、世代数を制限
+(setq backup-by-copying t
+      version-control t
+      kept-new-versions 5
+      kept-old-versions 2
+      delete-old-versions t)
 
 ;;; history
 (setq history-length 1000
