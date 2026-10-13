@@ -35,6 +35,9 @@
 (electric-pair-mode 1)
 (show-paren-mode 1)
 (column-number-mode 1)
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (setq-local truncate-lines t)))
 
 ;;; files
 (global-auto-revert-mode 1)
@@ -46,6 +49,9 @@
 (savehist-mode 1)
 (save-place-mode 1)
 (recentf-mode 1)
+
+;;; window
+(winner-mode 1)
 
 ;; exec-path-from-shell
 (straight-use-package 'exec-path-from-shell)
@@ -64,16 +70,22 @@
 ;;; agent-shell
 (straight-use-package 'agent-shell)
 (require 'agent-shell)
+(with-eval-after-load 'project
+  (keymap-set project-prefix-map "a" #'agent-shell)
+  (add-to-list 'project-switch-commands
+               '(agent-shell "Agent shell") t))
 
 ;;; ghostel
 (straight-use-package 'ghostel)
 (require 'ghostel)
-(keymap-set project-prefix-map "m" #'ghostel-project)
-(keymap-set project-prefix-map "M" #'ghostel-project-list-buffers)
-(add-to-list 'project-switch-commands
-             '(ghostel-project "Ghostel") t)
-(add-to-list 'project-switch-commands
-             '(ghostel-project-list-buffers "Ghostel buffers") t)
+(with-eval-after-load 'project
+  (keymap-set project-prefix-map "m" #'ghostel-project)
+  (keymap-set project-prefix-map "M" #'ghostel-project-list-buffers)
+
+  (add-to-list 'project-switch-commands
+               '(ghostel-project "Ghostel") t)
+  (add-to-list 'project-switch-commands
+               '(ghostel-project-list-buffers "Ghostel buffers") t))
 
 ;;; treesit
 (require 'treesit)
@@ -211,6 +223,7 @@
 
 ;;; markdown-mode
 (straight-use-package 'markdown-mode)
+(add-hook 'markdown-mode-hook #'visual-line-mode)
 
 ;;; typescript-ts-mode / tsx-ts-mode
 (require 'typescript-ts-mode)
@@ -257,8 +270,47 @@
              '(conf-toml-mode . toml-ts-mode))
 (add-hook 'toml-ts-mode-hook #'my/text-code-completion-setup)
 
-;;; org-mode
-
 ;;; project
 
 ;;; workspace
+(straight-use-package 'perspective)
+(require 'perspective)
+(setopt persp-mode-prefix-key (kbd "C-c w"))
+(setq persp-show-modestring 'header
+      persp-modestring-short nil)
+(persp-mode 1)
+(consult-customize consult-source-buffer
+                   :hidden t
+                   :default nil)
+(add-to-list 'consult-buffer-sources persp-consult-source)
+
+;;; doom-modeline
+(straight-use-package 'doom-modeline)
+(require 'doom-modeline)
+(doom-modeline-mode 1)
+
+;;; treemacs
+(straight-use-package 'treemacs)
+(require 'treemacs)
+(setq treemacs-width 30
+      treemacs-show-hidden-files t)
+(treemacs-follow-mode 1)
+(treemacs-filewatch-mode 1)
+(treemacs-git-mode 'simple)
+(keymap-global-set "C-c t" #'treemacs)
+(keymap-global-set "M-0" #'treemacs-select-window)
+(keymap-global-set "C-c T" #'treemacs-find-file)
+(with-eval-after-load 'project
+  (keymap-set project-prefix-map "t"
+              #'treemacs-add-and-display-current-project))
+
+(straight-use-package 'treemacs-perspective)
+(require 'treemacs-perspective)
+(treemacs-set-scope-type 'Perspectives)
+
+(straight-use-package 'treemacs-magit)
+(with-eval-after-load 'magit
+  (require 'treemacs-magit))
+
+;;; org-mode
+(add-hook 'markdown-mode-hook #'visual-line-mode)
