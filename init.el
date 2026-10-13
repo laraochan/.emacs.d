@@ -288,6 +288,7 @@
 (add-hook 'toml-ts-mode-hook #'my/text-code-completion-setup)
 
 ;;; project
+(require 'project)
 
 ;;; workspace
 (straight-use-package 'perspective)
@@ -300,6 +301,19 @@
                    :hidden t
                    :default nil)
 (add-to-list 'consult-buffer-sources persp-consult-source)
+;; プロジェクト選択後、操作メニューを出す前に workspace を切り替える。
+;; Treemacs の表示は各 workspace のウィンドウ配置に任せる。
+(defun my/project-switch-workspace (original dir)
+  "DIR の workspace に切り替え、標準のプロジェクト操作を実行する。"
+  (let* ((root (file-name-as-directory
+                (file-truename (project-root (project-current t dir)))))
+         (default-directory root)
+         (name (abbreviate-file-name (directory-file-name root))))
+    (persp-switch name)
+    (funcall original dir)))
+;; 再評価時にも以前の Treemacs 更新処理を残さない。
+(advice-remove 'project-switch-project #'my/project-switch-update-treemacs)
+(advice-add 'project-switch-project :around #'my/project-switch-workspace)
 
 ;;; doom-modeline
 (straight-use-package 'doom-modeline)
