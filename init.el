@@ -1,9 +1,7 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
-;;; straight.el
-
+;;; straight
 (defvar bootstrap-version)
-
 (let ((bootstrap-file
        (expand-file-name
         "straight/repos/straight.el/bootstrap.el"
@@ -14,55 +12,201 @@
     (with-current-buffer
         (url-retrieve-synchronously
          "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent
-         'inhibit-cookies)
+         'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;;; custom
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(load custom-file 'noerror 'nomessage)
 
-;;; Packages
+;;; global
+(set-face-attribute 'default nil :height 180)
+(setq inhibit-startup-screen t
+      use-short-answers t
+      use-dialog-box nil
+      ring-bell-function #'ignore)
 
+;;; editing
+(setq-default indent-tabs-mode nil
+              tab-width 4)
+(delete-selection-mode 1)
+(electric-pair-mode 1)
+(show-paren-mode 1)
+(column-number-mode 1)
+
+;;; files
+(global-auto-revert-mode 1)
+
+;;; history
+(setq history-length 1000
+      history-delete-duplicates t
+      recentf-max-saved-items 100)
+(savehist-mode 1)
+(save-place-mode 1)
+(recentf-mode 1)
+
+;; exec-path-from-shell
 (straight-use-package 'exec-path-from-shell)
-(straight-use-package 'doom-themes)
-(straight-use-package 'vterm)
-(straight-use-package 'magit)
-
-
-;;; Environment
-
 (require 'exec-path-from-shell)
-
-(when (memq window-system '(mac ns x pgtk))
+(when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
+;;; colorscheme
+(straight-use-package 'tron-legacy-theme)
+(load-theme 'tron-legacy t)
 
-;;; UI
-
+;;; which-key
 (require 'which-key)
 (which-key-mode 1)
 
-(require 'doom-themes)
+;;; agent-shell
+(straight-use-package 'agent-shell)
+(require 'agent-shell)
 
-(setq doom-themes-enable-bold t
-      doom-themes-enable-italic t)
+;;; ghostel
+(straight-use-package 'ghostel)
+(require 'ghostel)
+(keymap-set project-prefix-map "m" #'ghostel-project)
+(keymap-set project-prefix-map "M" #'ghostel-project-list-buffers)
+(add-to-list 'project-switch-commands
+             '(ghostel-project "Ghostel") t)
+(add-to-list 'project-switch-commands
+             '(ghostel-project-list-buffers "Ghostel buffers") t)
 
-(load-theme 'doom-one t)
-
-
-;;; Org
-
-(setq org-directory
-      "~/Library/Mobile Documents/com~apple~CloudDocs/org")
-
-(setq org-agenda-files
-      (list (expand-file-name "main.org" org-directory)))
-
-(defun my/open-org-main ()
+;;; treesit
+(require 'treesit)
+(setq treesit-font-lock-level 4
+      treesit-language-source-alist
+      '((json "https://github.com/tree-sitter/tree-sitter-json")
+	(yaml "https://github.com/ikatyang/tree-sitter-yaml")
+	(toml "https://github.com/ikatyang/tree-sitter-toml")
+	(git_config "https://github.com/the-mikedavis/tree-sitter-git-config")
+	(gitignore "https://github.com/shunsambongi/tree-sitter-gitignore")
+	(haskell "https://github.com/tree-sitter/tree-sitter-haskell")
+	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+	(php "https://github.com/tree-sitter/tree-sitter-php" "master" "php/src")
+	(php_only "https://github.com/tree-sitter/tree-sitter-php" "master" "php_only/src")
+	(phpdoc "https://github.com/claytonrcarter/tree-sitter-phpdoc")))
+(defun my/treesit-install-grammars ()
+  "未導入の Tree-sitter 文法をインストールする。"
   (interactive)
-  (find-file
-   (expand-file-name "main.org" org-directory)))
+  (dolist (entry treesit-language-source-alist)
+    (let ((lang (car entry)))
+      (unless (treesit-language-available-p lang)
+        (treesit-install-language-grammar lang)))))
 
-(global-set-key (kbd "C-c o") #'my/open-org-main)
+;; corfu
+(straight-use-package 'corfu)
+(require 'corfu)
+(setq corfu-auto t
+      corfu-auto-delay 0.2
+      corfu-auto-prefix 2
+      corfu-cycle t
+      corfu-preselect 'prompt)
+;; 候補が選択済みなら確定、それ以外は通常の動作
+(dolist (key '("RET" "<return>"))
+  (keymap-set corfu-map key
+	      '(menu-item "" nil
+			  :filter
+			  (lambda (&optional _)
+			    (when (>= corfu--index 0)
+			      #'corfu-insert)))))
+(add-hook 'prog-mode-hook
+	  (lambda ()
+	    (corfu-mode 1)
+	    (corfu-popupinfo-mode 1)))
 
-;;; init.el ends here
+;;; orderless
+(straight-use-package 'orderless)
+(require 'orderless)
+(setq completion-styles '(orderless basic)
+      completion-category-overrides '((file (styles partial-completion)))
+      completion-category-defaults nil
+      completion-pcm-leading-wildcard t)
+
+;;; cape
+(straight-use-package 'cape)
+(require 'cape)
+(add-hook 'completion-at-point-functions #'cape-file t)
+(add-hook 'completion-at-point-functions #'cape-dabbrev t)
+(defun my/elisp-block-completion-setup ()
+  (add-hook 'completion-at-point-functions
+            #'cape-elisp-block nil t)
+  (corfu-mode 1)
+  (corfu-popupinfo-mode 1))
+(add-hook 'org-mode-hook #'my/elisp-block-completion-setup)
+(add-hook 'markdown-mode-hook #'my/elisp-block-completion-setup)
+
+;;; vertico
+(straight-use-package 'vertico)
+(require 'vertico)
+(vertico-mode 1)
+
+;;; marginalia
+(straight-use-package 'marginalia)
+(require 'marginalia)
+(marginalia-mode 1)
+
+;;; consult
+(straight-use-package 'consult)
+(require 'consult)
+(define-key global-map [remap switch-to-buffer]
+            #'consult-buffer)
+(define-key global-map [remap switch-to-buffer-other-window]
+            #'consult-buffer-other-window)
+(define-key global-map [remap switch-to-buffer-other-frame]
+            #'consult-buffer-other-frame)
+(define-key global-map [remap project-switch-to-buffer]
+            #'consult-project-buffer)
+(define-key global-map [remap goto-line]
+            #'consult-goto-line)
+(define-key global-map [remap imenu]
+            #'consult-imenu)
+(define-key global-map [remap yank-pop]
+            #'consult-yank-pop)
+(define-key global-map [remap isearch-forward]
+            #'consult-line)
+(define-key global-map [remap project-find-regexp]
+            #'consult-ripgrep)
+(keymap-global-set "M-g i" #'consult-imenu)
+(keymap-global-set "M-g f" #'consult-flymake)
+(keymap-set minibuffer-local-map "C-r" #'consult-history)
+(setq xref-show-xrefs-function #'consult-xref
+      xref-show-definitions-function #'consult-xref)
+
+;;; magit
+(straight-use-package 'magit)
+
+;;; eglot
+(require 'eglot)
+(setq eglot-autoshutdown t)
+(add-hook 'haskell-mode-hook #'eglot-ensure)
+
+;;; diff-hl
+(straight-use-package 'diff-hl)
+(require 'diff-hl)
+(global-diff-hl-mode)
+(with-eval-after-load 'magit
+  (add-hook 'magit-post-refresh-hook
+            #'diff-hl-magit-post-refresh))
+
+;;; nyan-mode
+(straight-use-package 'nyan-mode)
+(nyan-mode 1)
+
+;;; haskell-mode
+(straight-use-package 'haskell-mode)
+
+;;; markdown-mode
+(straight-use-package 'markdown-mode)
+
+;;; web-mode
+
+;;; project
+
+;;; workspace
+
+;;; org-mode
