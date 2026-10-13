@@ -82,8 +82,6 @@
       '((json "https://github.com/tree-sitter/tree-sitter-json")
 	(yaml "https://github.com/ikatyang/tree-sitter-yaml")
 	(toml "https://github.com/ikatyang/tree-sitter-toml")
-	(git_config "https://github.com/the-mikedavis/tree-sitter-git-config")
-	(gitignore "https://github.com/shunsambongi/tree-sitter-gitignore")
 	(haskell "https://github.com/tree-sitter/tree-sitter-haskell")
 	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
 	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
