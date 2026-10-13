@@ -120,6 +120,9 @@
 	  (lambda ()
 	    (corfu-mode 1)
 	    (corfu-popupinfo-mode 1)))
+(defun my/text-code-completion-setup ()
+  (corfu-mode 1)
+  (corfu-popupinfo-mode 1))
 
 ;;; orderless
 (straight-use-package 'orderless)
@@ -137,8 +140,7 @@
 (defun my/elisp-block-completion-setup ()
   (add-hook 'completion-at-point-functions
             #'cape-elisp-block nil t)
-  (corfu-mode 1)
-  (corfu-popupinfo-mode 1))
+  (my/text-code-completion-setup))
 (add-hook 'org-mode-hook #'my/elisp-block-completion-setup)
 (add-hook 'markdown-mode-hook #'my/elisp-block-completion-setup)
 
@@ -212,8 +214,6 @@
 ;;; markdown-mode
 (straight-use-package 'markdown-mode)
 
-;;; web-mode
-
 ;;; typescript-ts-mode / tsx-ts-mode
 (require 'typescript-ts-mode)
 (add-to-list 'auto-mode-alist
@@ -229,8 +229,38 @@
              '("\\.php\\'" . php-ts-mode))
 (add-hook 'php-ts-mode-hook #'eglot-ensure)
 
+;;; html-ts-mode
+(require 'html-ts-mode)
+(add-to-list 'major-mode-remap-alist
+             '(html-mode . html-ts-mode))
+(add-to-list 'major-mode-remap-alist
+             '(mhtml-mode . html-ts-mode))
+(add-hook 'html-ts-mode-hook #'my/text-code-completion-setup)
+
+;;; css-ts-mode
+(require 'css-mode)
+(add-to-list 'major-mode-remap-alist
+             '(css-mode . css-ts-mode))
+
+;;; json-ts-mode
+(require 'json-ts-mode)
+(add-to-list 'major-mode-remap-alist
+             '(js-json-mode . json-ts-mode))
+
+;;; yaml-ts-mode
+(require 'yaml-ts-mode)
+(add-to-list 'auto-mode-alist
+             '("\\.ya?ml\\'" . yaml-ts-mode))
+(add-hook 'yaml-ts-mode-hook #'my/text-code-completion-setup)
+
+;;; toml-ts-mode
+(require 'toml-ts-mode)
+(add-to-list 'major-mode-remap-alist
+             '(conf-toml-mode . toml-ts-mode))
+(add-hook 'toml-ts-mode-hook #'my/text-code-completion-setup)
+
+;;; org-mode
+
 ;;; project
 
 ;;; workspace
-
-;;; org-mode
