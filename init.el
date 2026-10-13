@@ -89,7 +89,9 @@
 	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
 	(php "https://github.com/tree-sitter/tree-sitter-php" "master" "php/src")
 	(php_only "https://github.com/tree-sitter/tree-sitter-php" "master" "php_only/src")
-	(phpdoc "https://github.com/claytonrcarter/tree-sitter-phpdoc")))
+	(phpdoc "https://github.com/claytonrcarter/tree-sitter-phpdoc")
+    (html "https://github.com/tree-sitter/tree-sitter-html")
+    (css "https://github.com/tree-sitter/tree-sitter-css")))
 (defun my/treesit-install-grammars ()
   "未導入の Tree-sitter 文法をインストールする。"
   (interactive)
@@ -180,11 +182,6 @@
 ;;; magit
 (straight-use-package 'magit)
 
-;;; eglot
-(require 'eglot)
-(setq eglot-autoshutdown t)
-(add-hook 'haskell-mode-hook #'eglot-ensure)
-
 ;;; diff-hl
 (straight-use-package 'diff-hl)
 (require 'diff-hl)
@@ -197,13 +194,40 @@
 (straight-use-package 'nyan-mode)
 (nyan-mode 1)
 
+;;; eglot
+(require 'eglot)
+(setq eglot-autoshutdown t)
+(add-to-list 'eglot-server-programs
+             '(haskell-mode . ("haskell-language-server-wrapper" "--lsp")))
+(add-to-list 'eglot-server-programs
+             '(((typescript-ts-mode :language-id "typescript")
+                (tsx-ts-mode :language-id "typescriptreact")) . ("vtsls" "--stdio")))
+(add-to-list 'eglot-server-programs
+             '(php-ts-mode . ("phpantom_lsp")))
+
 ;;; haskell-mode
 (straight-use-package 'haskell-mode)
+(add-hook 'haskell-mode-hook #'eglot-ensure)
 
 ;;; markdown-mode
 (straight-use-package 'markdown-mode)
 
 ;;; web-mode
+
+;;; typescript-ts-mode / tsx-ts-mode
+(require 'typescript-ts-mode)
+(add-to-list 'auto-mode-alist
+             '("\\.ts\\'" . typescript-ts-mode))
+(add-to-list 'auto-mode-alist
+             '("\\.tsx\\'" . tsx-ts-mode))
+(add-hook 'typescript-ts-mode-hook #'eglot-ensure)
+(add-hook 'tsx-ts-mode-hook #'eglot-ensure)
+
+;;; php-ts-mode
+(require 'php-ts-mode)
+(add-to-list 'auto-mode-alist
+             '("\\.php\\'" . php-ts-mode))
+(add-hook 'php-ts-mode-hook #'eglot-ensure)
 
 ;;; project
 

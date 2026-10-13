@@ -1,0 +1,9 @@
+# Ignore everything
+/*
+
+# Track configuration
+!/.gitignore
+!/early-init.el
+!/init.el
+!/README.org
+!/LICENSE
